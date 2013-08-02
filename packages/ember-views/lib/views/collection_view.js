@@ -331,7 +331,7 @@ Ember.CollectionView = Ember.ContainerView.extend(/** @scope Ember.CollectionVie
   */
   arrayDidChange: function(content, start, removed, added) {
     var addedViews = [], view, item, idx, len, itemViewClass,
-      emptyView;
+      emptyView, attrs;
 
     len = content ? get(content, 'length') : 0;
 
@@ -347,10 +347,18 @@ Ember.CollectionView = Ember.ContainerView.extend(/** @scope Ember.CollectionVie
       for (idx = start; idx < start+added; idx++) {
         item = content.objectAt(idx);
 
-        view = this.createChildView(itemViewClass, {
+        attrs = {
           content: item,
           contentIndex: idx
-        });
+        };
+
+         
+        // add context if this is not an each view
+        if(!Ember.Handlebars || !(this instanceof Ember.Handlebars.EachView)){
+          attrs.context = item;
+        }
+
+        view = this.createChildView(itemViewClass, attrs);
 
         addedViews.push(view);
       }
